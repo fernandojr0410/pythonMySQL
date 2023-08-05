@@ -7,6 +7,7 @@ configuracao_banco = {
     "database": "projetoPython"
 }
 
+
 def insert_cliente(nome, idade):
     try:
         connection = mysql.connector.connect(configuracao_banco)
@@ -23,6 +24,7 @@ def insert_cliente(nome, idade):
     finally:
         cursor.close()
         connection.close()
+
 
 def atualizar_cliente(IdCliente, Nome, Idade):
     try:
@@ -41,6 +43,7 @@ def atualizar_cliente(IdCliente, Nome, Idade):
         cursor.close()
         connection.close()
 
+
 def deletar_cliente(IdCliente):
     try:
         connection = mysql.connector.connect(configuracao_banco)
@@ -58,6 +61,7 @@ def deletar_cliente(IdCliente):
         cursor.close()
         connection.close()
 
+
 def consultar_cliente():
     try:
         connection = mysql.connector.connect(configuracao_banco)
@@ -68,7 +72,8 @@ def consultar_cliente():
 
         clientes = cursor.fetchall()
         for cliente in clientes:
-            print(f"IdCliente: {cliente[0]}, Nome: {cliente[1]}, Idade: {cliente[2]}")
+            print(
+                f"IdCliente: {cliente[0]}, Nome: {cliente[1]}, Idade: {cliente[2]}")
     except mysql.connector.Error as error:
         print(f"Erro ao consultar cleintes: {error}")
     finally:
