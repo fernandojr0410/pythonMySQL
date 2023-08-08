@@ -2,80 +2,106 @@ import mysql.connector
 
 configuracao_banco = {
     "host": "localhost",
-    "user": "user",
-    "password": "Positivosim@0410",
+    "user": "root",
+    "password": "Positivosim0410@",
     "database": "projetoPython"
 }
 
 
 def insert_cliente(nome, idade):
+    connection = None
+    cursor = None
     try:
-        connection = mysql.connector.connect(configuracao_banco)
+        if nome is None or idade is None:
+            raise ValueError("Nome e idade são obrigatórios")
+
+        connection = mysql.connector.connect(**configuracao_banco)
+        connection.autocommit = True
         cursor = connection.cursor()
 
         sql = "INSERT INTO Cliente (Nome, Idade) VALUES (%s, %s)"
         values = (nome, idade)
         cursor.execute(sql, values)
 
-        connection.commit()
         print("Registro Inserido com Sucesso!")
+
     except mysql.connector.Error as error:
         print(f"Erro ao inserir dados: {error}")
+    except ValueError as error:
+        print(f"Erro ao inserir dados: {error}")
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 
 def atualizar_cliente(IdCliente, Nome, Idade):
     try:
-        connection = mysql.connector.connect(configuracao_banco)
+        connection = mysql.connector.connect(**configuracao_banco)
+        connection.autocommit = True
         cursor = connection.cursor()
 
-        sql = "UPDATE Cliente SET nome=%s, id=%s WHERE IdCliente=%s"
+        sql = "UPDATE Cliente SET Nome=%s, Idade=%s WHERE IdCliente=%s"
         values = (Nome, Idade, IdCliente)
         cursor.execute(sql, values)
 
-        connection.commit()
+        
         print("Dados atualizados com Sucesso!")
     except mysql.connector.Error as error:
         print(f"Erro ao atualizar registro: {error}")
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
 
 
 def deletar_cliente(IdCliente):
     try:
-        connection = mysql.connector.connect(configuracao_banco)
+        connection = mysql.connector.connect(**configuracao_banco)
+        connection.autocommit = True
         cursor = connection.cursor()
 
         sql = "DELETE FROM Cliente WHERE IdCliente=%s"
         values = (IdCliente),
         cursor.execute(sql, values)
 
-        connection.commit()
+        
         print("Registro Deletado com Sucesso!")
     except mysql.connector.Error as error:
         print(f"Erro ao deletar registro: {error}")
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()
+        
 
 
 def consultar_cliente():
     try:
-        connection = mysql.connector.connect(configuracao_banco)
+        connection = mysql.connector.connect(**configuracao_banco)
+        connection.autocommit = True
         cursor = connection.cursor()
 
         sql = "SELECT * FROM Cliente"
         cursor.execute(sql)
 
-        clientes = cursor.fetchall()
-        for cliente in clientes:
-            print(
-                f"IdCliente: {cliente[0]}, Nome: {cliente[1]}, Idade: {cliente[2]}")
+        clientes = []
+        for cliente in cursor.fetchall():
+            cliente_dict = {
+                "IdCliente": cliente[0],
+                "Nome": cliente[1],
+                "Idade": cliente[2]
+            }
+            clientes.append(cliente_dict)
+
+        return clientes
     except mysql.connector.Error as error:
-        print(f"Erro ao consultar cleintes: {error}")
+        raise error
     finally:
-        cursor.close()
-        connection.close()
+        if cursor:
+            cursor.close()
+        if connection:
+            connection.close()

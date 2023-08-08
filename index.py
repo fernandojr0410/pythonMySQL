@@ -7,10 +7,17 @@ app = Flask(__name__)
 @app.route("/cliente", methods=["POST"])
 def cadastrar_cliente():
     data = request.get_json()
-    nome = data["nome"]
-    idade = data["idade"]
-    cliente.insert_cliente(nome, idade)
-    return jsonify({"mensagem": "Cliente cadastrado com Sucesso!"})
+    if isinstance(data, list):
+        for entry in data:
+            nome = entry["nome"]
+            idade = entry["idade"]
+            cliente.insert_cliente(nome, idade)
+        return jsonify({"mensagem": "Clientes cadastrados com Sucesso!"})
+    else:
+        nome = data["nome"]
+        idade = data["idade"]
+        cliente.insert_cliente(nome, idade)
+        return jsonify({"mensagem": "Cliente cadastrado com Sucesso!"})
 
 # Atualizando Registros
 @app.route("/cliente/<int:id>", methods=["PUT"])
@@ -29,9 +36,13 @@ def excluir_cliente(id):
 
 # Consultando Registros
 @app.route("/cliente", methods=["GET"])
-def listar_contatos():
-    clientes = cliente.consultar_cliente()
-    return jsonify(clientes)
+def listar_clientes():
+    try:
+        clientes = cliente.consultar_cliente()
+        return jsonify(clientes)
+    except Exception as error:
+        return jsonify({"erro": str(error)})
+
 
 print("Servidor Iniciado")
 if __name__ == "__main__":
