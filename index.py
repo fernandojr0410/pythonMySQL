@@ -4,6 +4,8 @@ import cliente
 app = Flask(__name__)
 
 # Inserindo Registros
+
+
 @app.route("/cliente", methods=["POST"])
 def cadastrar_cliente():
     data = request.get_json()
@@ -20,30 +22,56 @@ def cadastrar_cliente():
         return jsonify({"mensagem": "Cliente cadastrado com Sucesso!"})
 
 # Atualizando Registros
+
+
 @app.route("/cliente/<int:id>", methods=["PUT"])
 def atualizar_registro(id):
-    data = request.get_json()
-    nome = data["nome"]
-    idade = data["idade"]
-    cliente.atualizar_cliente(id, nome, idade)
-    return jsonify({"Mensagem": "Cliente atualizado com Sucesso!"})
+    try:
+        data = request.get_json()
+        nome = data.get("nome")
+        idade = data.get("idade")
+
+        if nome is not None:
+            cliente.atualizar_nome(id, nome)
+        if idade is not None:
+            cliente.atualizar_idade(id, idade)
+
+        return jsonify({"Mensagem": "Cliente atualizado com Sucesso!"})
+    except Exception as error:
+        return jsonify({"erro": str(error)})
 
 # Deletando Registros
+
+
 @app.route("/cliente/<int:id>", methods=["DELETE"])
 def excluir_cliente(id):
     cliente.deletar_cliente(id)
     return jsonify({"Mensagem": "Cliente deletado com Sucesso!"})
 
-# Consultando Registros
+
+# Consultando todos os Registros
+
+
 @app.route("/cliente", methods=["GET"])
 def listar_clientes():
     try:
-        clientes = cliente.consultar_cliente()
+        clientes = cliente.listar_todos_clientes()
         return jsonify(clientes)
+    except Exception as error:
+        return jsonify({"erro": str(error)})
+
+# Consultando Registros por ID
+
+
+@app.route("/cliente/<int:id>", methods=["GET"])
+def listar_cliente_por_id(id):
+    try:
+        cliente_info = cliente.consultar_cliente_por_id(id)
+        return jsonify(cliente_info)
     except Exception as error:
         return jsonify({"erro": str(error)})
 
 
 print("Servidor Iniciado")
 if __name__ == "__main__":
-    app.run(port=8080, host="localhost", debug=True)
+    app.run(port=5050, host="localhost", debug=True)
